@@ -1,3 +1,6 @@
+// Author: https://github.com/mdpe-ir
+// Copyright (c) 2023
+
 package utils
 
 import (

@@ -1,3 +1,6 @@
+// Author: https://github.com/mdpe-ir
+// Copyright (c) 2023
+
 package md_spotify_dl
 
 import (
