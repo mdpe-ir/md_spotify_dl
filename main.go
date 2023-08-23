@@ -33,10 +33,11 @@ func main() {
 				os.Exit(0)
 			}
 
+			isSpotifyUrl := true
 			spotifyURL = args[0]
 
 			if len(spotifyURL) == 0 {
-				fmt.Println("=> Spotify URL required.")
+				fmt.Println("=> Spotify URL Or Trak Name required.")
 				_ = cmd.Help()
 				return
 			}
@@ -44,33 +45,40 @@ func main() {
 			splitURL := strings.Split(spotifyURL, "/")
 
 			if len(splitURL) < 2 {
-				fmt.Println("=> Please enter the url copied from the spotify client.")
+				isSpotifyUrl = false
+				//fmt.Println("=> Please enter the url copied from the spotify client.")
+				//os.Exit(1)
+			}
+
+			if isSpotifyUrl {
+				spotifyID := splitURL[len(splitURL)-1]
+				if strings.Contains(spotifyID, "?") {
+					spotifyID = strings.Split(spotifyID, "?")[0]
+				}
+
+				if strings.Contains(spotifyURL, "album") {
+					albumID = spotifyID
+					mdspotifydl.DownloadAlbum(ctx, albumID)
+				} else if strings.Contains(spotifyURL, "playlist") {
+					playlistID = spotifyID
+					mdspotifydl.DownloadPlaylist(ctx, playlistID)
+				} else if strings.Contains(spotifyURL, "track") {
+					trackID = spotifyID
+					mdspotifydl.DownloadSong(ctx, trackID)
+				} else {
+					fmt.Println("=> Only Spotify Album/Playlist/Track URL's are supported.")
+					_ = cmd.Help()
+				}
+			}
+
+			if !isSpotifyUrl {
+				fmt.Println("=> Start searching in spotify for " + spotifyURL + " ...")
 				os.Exit(1)
 			}
-
-			spotifyID := splitURL[len(splitURL)-1]
-			if strings.Contains(spotifyID, "?") {
-				spotifyID = strings.Split(spotifyID, "?")[0]
-			}
-
-			if strings.Contains(spotifyURL, "album") {
-				albumID = spotifyID
-				mdspotifydl.DownloadAlbum(ctx, albumID)
-			} else if strings.Contains(spotifyURL, "playlist") {
-				playlistID = spotifyID
-				mdspotifydl.DownloadPlaylist(ctx, playlistID)
-			} else if strings.Contains(spotifyURL, "track") {
-				trackID = spotifyID
-				mdspotifydl.DownloadSong(ctx, trackID)
-			} else {
-				fmt.Println("=> Only Spotify Album/Playlist/Track URL's are supported.")
-				_ = cmd.Help()
-			}
-
 		},
 	}
 
-	rootCmd.SetUsageTemplate(fmt.Sprintf("%s [spotify_url] \n", mdspotifydl.AppUse))
+	rootCmd.SetUsageTemplate(fmt.Sprintf("%s [spotify_url or track name] \n", mdspotifydl.AppUse))
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
