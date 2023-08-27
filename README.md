@@ -43,3 +43,5 @@ brew install ffmpeg
 
 For **Windows** see the [detailed tutorial](https://windowsloop.com/install-ffmpeg-windows-10/).
 
+## TODO:
+- [ ] Adding Meta Data To .mp3
